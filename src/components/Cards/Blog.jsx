@@ -2,7 +2,6 @@ import React from "react";
 import propTypes from "prop-types";
 import {
   Card,
-  CardImg,
   CardText,
   CardBody,
   CardLink,
@@ -30,7 +29,11 @@ const BlogCard = ({ post, readmore }) => (
             Posted on <Moment format="MMMM D, YYYY">{post.created_at}</Moment>&nbsp;by&nbsp;
             <a href="#">Start Bootstrap</a>
             <span className="float-right">
-              {post.likes_count} <i className="fa fa-thumbs-up" title="Likes" />
+              {post.likes_count}{" "}
+              <i
+                className="fa fa-thumbs-up"
+                title={post.likes_user.map(like => like.user.name)}
+              />&nbsp;
               {post.comments_count}&nbsp;
               <i className="fa fa-comment" title="Comments" />
             </span>
