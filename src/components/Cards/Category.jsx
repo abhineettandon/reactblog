@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 class Categories extends React.Component {
   state = { categories: [] };
@@ -19,7 +20,9 @@ class Categories extends React.Component {
               <ul className="list-unstyled mb-0">
                 {this.state.categories.map(category => (
                   <li>
-                    <a href="#">{category.name}</a>
+                    <Link to={`/blog/category/${category.id}`}>
+                      {category.name} ({category.posts_count})
+                    </Link>
                   </li>
                 ))}
               </ul>

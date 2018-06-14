@@ -1,24 +1,44 @@
 import React from "react";
 import propTypes from "prop-types";
+import {
+  Card,
+  CardImg,
+  CardText,
+  CardBody,
+  CardLink,
+  CardTitle,
+  CardSubtitle
+} from "reactstrap";
 import Moment from "react-moment";
 import { Link } from "react-router-dom";
 
 const BlogCard = ({ post, readmore }) => (
   <div className="card mb-4">
-    <img
-      className="card-img-top"
-      src="http://placehold.it/750x300"
-      alt="Card image cap"
-    />
-    <div className="card-body">
-      <h2 className="card-title">{post.title}</h2>
-      <p className="card-text">{post.body}</p>
-      {readmore && <Link to={`/blog/${post.id}`}>Read More &rarr;</Link>}
-    </div>
-    <div className="card-footer text-muted">
-      Posted on <Moment format="MMMM D, YYYY">{post.created_at}</Moment>&nbsp;by&nbsp;
-      <a href="#">Start Bootstrap</a>
-    </div>
+    <Card>
+      <CardBody>
+        <CardTitle>{post.title}</CardTitle>
+      </CardBody>
+      <img
+        className="card-img-top"
+        src="http://placehold.it/750x300"
+        alt="Card image cap"
+      />
+      <CardBody>
+        <CardText>{post.body}</CardText>
+        <CardText>
+          <small className="text-muted">
+            Posted on <Moment format="MMMM D, YYYY">{post.created_at}</Moment>&nbsp;by&nbsp;
+            <a href="#">Start Bootstrap</a>
+            <span className="float-right">
+              {post.comments_count} <i className="fa fa-comment" />
+            </span>
+          </small>
+        </CardText>
+        <CardLink>
+          {readmore && <Link to={`/blog/${post.id}`}>Read More &rarr;</Link>}
+        </CardLink>
+      </CardBody>
+    </Card>
   </div>
 );
 

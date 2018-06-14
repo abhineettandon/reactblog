@@ -14,7 +14,7 @@ class BlogList extends React.Component {
 
   render() {
     return (
-      <BlogLayout>
+      <BlogLayout title="Recent posts">
         {this.state.posts.map(post => <BlogCard key={post.id} post={post} />)}
       </BlogLayout>
     );
