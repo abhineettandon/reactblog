@@ -39,9 +39,13 @@ const BlogCard = ({ post, readmore }) => (
             </span>
           </small>
         </CardText>
-        <CardLink>
-          {readmore && <Link to={`/blog/${post.id}`}>Read More &rarr;</Link>}
-        </CardLink>
+        {readmore ? (
+          <CardLink>
+            <Link to={`/blog/${post.id}`}>Read More &rarr;</Link>
+          </CardLink>
+        ) : (
+          ""
+        )}
       </CardBody>
     </Card>
   </div>

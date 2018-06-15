@@ -18,8 +18,8 @@ class Categories extends React.Component {
           <div className="row">
             <div className="col-lg-6">
               <ul className="list-unstyled mb-0">
-                {this.state.categories.map(category => (
-                  <li>
+                {this.state.categories.map((category, index) => (
+                  <li key={index}>
                     <Link to={`/blog/category/${category.id}`}>
                       {category.name} ({category.posts_count})
                     </Link>
