@@ -40,6 +40,11 @@ const Header = () => (
             Blog
           </NavLink>
         </NavItem>
+        <NavItem>
+          <NavLink tag={Link} to="/Login">
+            Login
+          </NavLink>
+        </NavItem>
       </Nav>
     </div>
   </Navbar>

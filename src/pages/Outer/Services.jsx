@@ -1,11 +1,12 @@
 import React from "react";
-import { Jumbotron, Button } from "reactstrap";
-import Defaultlayout from "../layouts/defaultLayout.jsx";
 
-const Home = () => (
+import { Jumbotron, Button } from "reactstrap";
+import Defaultlayout from "../../layouts/defaultLayout.jsx";
+
+const Services = () => (
   <Defaultlayout>
     <Jumbotron>
-      <h1>This is Home page</h1>
+      <h1>This is Services page</h1>
       <p className="lead">
         This is a modified jumbotron that occupies the entire horizontal space
         of its parent.
@@ -18,4 +19,4 @@ const Home = () => (
   </Defaultlayout>
 );
 
-export default Home;
+export default Services;
