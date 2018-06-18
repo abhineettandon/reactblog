@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 
 import DefaultLayout from "../../layouts/defaultLayout.jsx";
 import Widget from "../../components/Cards/Widget.jsx";
@@ -9,32 +10,32 @@ const Register = () => (
     <div className="row">
       <div className="col-md-6 offset-md-3">
         <Widget title="Register">
-          <form method="POST">
-            <div className="form-group">
-              <label>Name</label>
-              <input className="form-control" type="text" />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input className="form-control" type="text" />
-            </div>
-            <div className="form-group">
-              <label>Password</label>
-              <input className="form-control" type="password" />
-            </div>
-            <div className="form-group">
-              <label>Confirm password</label>
-              <input className="form-control" type="confirm_password" />
-            </div>
-            <div className="form-group">
-              <button className="btn btn-primary col-md-12" disabled>
-                Sumit
-              </button>
-            </div>
-            <div className="form-group">
-              <Link to="/login">Alredy have account? Login here</Link>
-            </div>
-          </form>
+          <Form>
+            <FormGroup>
+              <Label>Name</Label>
+              <Input type="text" />
+            </FormGroup>
+            <FormGroup>
+              <Label>Email</Label>
+              <Input type="text" />
+            </FormGroup>
+            <FormGroup>
+              <Label>Password</Label>
+              <Input type="password" />
+            </FormGroup>
+            <FormGroup>
+              <Label>Confirm password</Label>
+              <Input type="password" />
+            </FormGroup>
+            <FormGroup>
+              <Button color="primary" block>
+                Submit
+              </Button>
+            </FormGroup>
+            <FormGroup>
+              <Link to="/login">Already have an account? Login here</Link>
+            </FormGroup>
+          </Form>
         </Widget>
       </div>
     </div>

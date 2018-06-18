@@ -1,5 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  FormFeedback,
+  Button,
+  Alert
+} from "reactstrap";
+import axios from "axios";
 
 import DefaultLayout from "../../layouts/defaultLayout.jsx";
 import Widget from "../../components/Cards/Widget.jsx";
@@ -7,62 +17,132 @@ import Widget from "../../components/Cards/Widget.jsx";
 class Login extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { formdata: { email: "", password: "" } };
+    this.state = {
+      formData: { email: "", password: "" },
+      formErrors: { email: false, password: false },
+      isFormValid: false,
+      loginFailAlert: false
+    };
   }
 
+  updateErrorState = (key, value) => {
+    this.setState(
+      oldState => ({
+        oldState,
+        formErrors: { ...oldState.formErrors, [key]: value }
+      }),
+      () => {
+        const { formData, formErrors } = this.state;
+        let validate = false;
+        for (let errors in formErrors) {
+          if (formErrors[errors] !== true) {
+            validate = true;
+          } else {
+            validate = false;
+            break;
+          }
+        }
+        for (let input in formData) {
+          if (formData[input] !== "") {
+            validate = true;
+          } else {
+            validate = false;
+            break;
+          }
+        }
+        if (validate) {
+          this.setState(oldState => ({ isFormValid: true }));
+        } else {
+          this.setState(oldState => ({ isFormValid: false }));
+        }
+      }
+    );
+  };
+
+  isValid = ({ name, value }) => {
+    switch (name) {
+      case "email":
+        if (value === "") {
+          this.updateErrorState("email", true);
+        } else {
+          this.updateErrorState("email", false);
+        }
+        const emailReg = new RegExp("");
+        break;
+      case "password":
+        if (value === "") {
+          this.updateErrorState("password", true);
+        } else {
+          this.updateErrorState("password", false);
+        }
+        break;
+    }
+  };
+
   handleChange = event => {
-    const { formdata } = this.state;
-    formdata[event.target.name] = event.target.value;
-    this.setState({
-      formdata
-    });
+    const { formData } = this.state;
+    formData[event.target.name] = event.target.value;
+    this.setState(() => ({ formData: formData }), this.isValid(event.target));
   };
 
   handleSubmit = event => {
     event.preventDefault();
-    fetch("http://blog.test/api/login", {
-      method: "POST",
-      data: this.state.formdata
-    });
-    console.log(this.state.formdata);
+    // const { email, password } = this.state.formData;
+    // const fd = new FormData();
+    // fd.append("email", email);
+    // fd.append("password", password);
+    // fetch("http://blog.test/api/auth/login", {
+    //   method: "POST",
+    //   body: fd
+    // })
+    //   .then(response => console.log(response))
+    //   .catch(error => console.log(error));
   };
 
   render() {
+    const { formData, formErrors, isFormValid, loginFailAlert } = this.state;
     return (
       <DefaultLayout>
         <div className="row">
           <div className="col-md-6 offset-md-3">
             <Widget title="Login">
-              <form onSubmit={this.handleSubmit}>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    className="form-control"
+              <Alert color="danger" isOpen={loginFailAlert}>
+                These credentials do not match our record. Please try again.
+              </Alert>
+              <Form onSubmit={this.handleSubmit}>
+                <FormGroup>
+                  <Label>Email</Label>
+                  <Input
                     type="text"
                     name="email"
-                    value={this.state.formdata.email}
+                    value={formData.email}
                     onChange={this.handleChange}
+                    invalid={formErrors.email}
                   />
-                </div>
-                <div className="form-group">
-                  <label>Password</label>
-                  <input
-                    className="form-control"
+                  <FormFeedback>Email is required</FormFeedback>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Password</Label>
+                  <Input
                     type="password"
                     name="password"
-                    value={this.state.formdata.password}
+                    value={formData.password}
                     onChange={this.handleChange}
+                    invalid={formErrors.password}
                   />
-                </div>
-                <div className="form-group">
-                  <button className="btn btn-primary col-md-12">Submit</button>
-                </div>
-                <div className="form-group">
+                  <FormFeedback>Password is required</FormFeedback>
+                </FormGroup>
+                <FormGroup>
+                  <Button disabled={!isFormValid} color="primary" block>
+                    Submit
+                  </Button>
+                </FormGroup>
+                <FormGroup>
                   <Link to="/register">
                     Don't have an account? Register here.
                   </Link>
-                </div>
-              </form>
+                </FormGroup>
+              </Form>
             </Widget>
           </div>
         </div>
