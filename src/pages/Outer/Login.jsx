@@ -87,16 +87,14 @@ class Login extends React.Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    // const { email, password } = this.state.formData;
-    // const fd = new FormData();
-    // fd.append("email", email);
-    // fd.append("password", password);
-    // fetch("http://blog.test/api/auth/login", {
-    //   method: "POST",
-    //   body: fd
-    // })
-    //   .then(response => console.log(response))
-    //   .catch(error => console.log(error));
+    const { formData } = this.state;
+    axios
+      .post("http://blog.test/api/auth/login", formData)
+      .then(response => {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("api_token", response.data.api_token);
+      })
+      .catch(error => this.setState(() => ({ loginFailAlert: true })));
   };
 
   render() {
