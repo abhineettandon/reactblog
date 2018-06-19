@@ -41,7 +41,7 @@ const Header = () => (
           </NavLink>
         </NavItem>
         <NavItem>
-          <NavLink tag={Link} to="/Login">
+          <NavLink tag={Link} to="/login">
             Login
           </NavLink>
         </NavItem>

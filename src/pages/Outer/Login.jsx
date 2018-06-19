@@ -19,17 +19,30 @@ class Login extends React.Component {
     super(props);
     this.state = {
       formData: { email: "", password: "" },
-      formErrors: { email: false, password: false },
+      formErrors: {
+        email: {
+          required: false,
+          valid: false
+        },
+        password: {
+          required: false
+        }
+      },
       isFormValid: false,
-      loginFailAlert: false
+      failAlert: {
+        open: false,
+        message: ""
+      }
     };
   }
 
   updateErrorState = (key, value) => {
     this.setState(
       oldState => ({
-        oldState,
-        formErrors: { ...oldState.formErrors, [key]: value }
+        formErrors: {
+          ...oldState.formErrors,
+          [key]: { ...oldState.formErrors[key], ...value }
+        }
       }),
       () => {
         const { formData, formErrors } = this.state;
@@ -63,17 +76,29 @@ class Login extends React.Component {
     switch (name) {
       case "email":
         if (value === "") {
-          this.updateErrorState("email", true);
+          this.updateErrorState("email", { required: true });
         } else {
-          this.updateErrorState("email", false);
+          this.updateErrorState("email", { required: false });
         }
-        const emailReg = new RegExp("");
+
+        if (value !== "") {
+          const regEx = new RegExp(
+            /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+          );
+          if (!regEx.test(value)) {
+            this.updateErrorState("email", { valid: true });
+          } else {
+            this.updateErrorState("email", { valid: false });
+          }
+        } else {
+          this.updateErrorState("email", { valid: false });
+        }
         break;
       case "password":
         if (value === "") {
-          this.updateErrorState("password", true);
+          this.updateErrorState("password", { required: true });
         } else {
-          this.updateErrorState("password", false);
+          this.updateErrorState("password", { required: false });
         }
         break;
     }
@@ -94,17 +119,19 @@ class Login extends React.Component {
         localStorage.setItem("user", JSON.stringify(response.data.user));
         localStorage.setItem("api_token", response.data.api_token);
       })
-      .catch(error => this.setState(() => ({ loginFailAlert: true })));
+      .catch(error =>
+        this.setState(() => ({ failAlert: { open: true, message: error } }))
+      );
   };
 
   render() {
-    const { formData, formErrors, isFormValid, loginFailAlert } = this.state;
+    const { formData, formErrors, isFormValid, failAlert } = this.state;
     return (
       <DefaultLayout>
         <div className="row">
           <div className="col-md-6 offset-md-3">
             <Widget title="Login">
-              <Alert color="danger" isOpen={loginFailAlert}>
+              <Alert color="danger" isOpen={failAlert.open}>
                 These credentials do not match our record. Please try again.
               </Alert>
               <Form onSubmit={this.handleSubmit}>
@@ -115,9 +142,16 @@ class Login extends React.Component {
                     name="email"
                     value={formData.email}
                     onChange={this.handleChange}
-                    invalid={formErrors.email}
+                    invalid={
+                      formErrors.email.required || formErrors.email.valid
+                    }
                   />
-                  <FormFeedback>Email is required</FormFeedback>
+                  {formErrors.email.required && (
+                    <FormFeedback>Email is required</FormFeedback>
+                  )}
+                  {formErrors.email.valid && (
+                    <FormFeedback>Enter a valid email</FormFeedback>
+                  )}
                 </FormGroup>
                 <FormGroup>
                   <Label>Password</Label>
@@ -126,9 +160,11 @@ class Login extends React.Component {
                     name="password"
                     value={formData.password}
                     onChange={this.handleChange}
-                    invalid={formErrors.password}
+                    invalid={formErrors.password.required}
                   />
-                  <FormFeedback>Password is required</FormFeedback>
+                  {formErrors.password.required && (
+                    <FormFeedback>Password is required</FormFeedback>
+                  )}
                 </FormGroup>
                 <FormGroup>
                   <Button disabled={!isFormValid} color="primary" block>

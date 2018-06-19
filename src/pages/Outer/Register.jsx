@@ -9,6 +9,7 @@ import {
   Button,
   Alert
 } from "reactstrap";
+import axios from "axios";
 
 import DefaultLayout from "../../layouts/defaultLayout.jsx";
 import Widget from "../../components/Cards/Widget.jsx";
@@ -24,42 +25,79 @@ class Register extends React.Component {
         confirm_password: ""
       },
       formErrors: {
-        name: false,
-        email: false,
-        password: false,
-        confirm_password: false
+        name: {
+          required: false
+        },
+        email: {
+          required: false,
+          valid: false
+        },
+        password: {
+          required: false
+        },
+        confirm_password: {
+          required: false,
+          matched: false
+        }
       },
-      isFormValid: false
+      isFormValid: false,
+      failAlert: {
+        open: false,
+        message: ""
+      }
     };
   }
 
   handleChange = event => {
     const { formData } = this.state;
     formData[event.target.name] = event.target.value;
-    this.setState(() => ({ formData: formData }), this.isValid(event.target));
+    this.setState(
+      () => ({ formData: formData }),
+      this.isInputValid(event.target)
+    );
   };
 
-  isValid = ({ name, value }) => {
+  isInputValid = ({ name, value }) => {
     switch (name) {
       case "name":
         value === ""
-          ? this.updateErrorState("name", true)
-          : this.updateErrorState("name", false);
+          ? this.updateErrorState("name", { required: true })
+          : this.updateErrorState("name", { required: false });
         break;
       case "email":
-        value === ""
-          ? this.updateErrorState("email", true)
-          : this.updateErrorState("email", false);
+        if (value === "") {
+          this.updateErrorState("email", { required: true });
+        } else {
+          this.updateErrorState("email", { required: false });
+        }
+        if (value !== "") {
+          const regEx = new RegExp(
+            /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+          );
+          if (!regEx.test(value)) {
+            this.updateErrorState("email", { valid: true });
+          } else {
+            this.updateErrorState("email", { valid: false });
+          }
+        } else {
+          this.updateErrorState("email", { valid: false });
+        }
         break;
       case "password":
         value === ""
-          ? this.updateErrorState("password", true)
-          : this.updateErrorState("password", false);
+          ? this.updateErrorState("password", { required: true })
+          : this.updateErrorState("password", { required: false });
         break;
       case "confirm_password":
         value === ""
-          ? this.updateErrorState("confirm_password", true)
-          : this.updateErrorState("confirm_password", false);
+          ? this.updateErrorState("confirm_password", { required: true })
+          : this.updateErrorState("confirm_password", { required: false });
+
+        if (value !== "") {
+          value !== this.state.formData.password
+            ? this.updateErrorState("confirm_password", { matched: true })
+            : this.updateErrorState("confirm_password", { matched: false });
+        }
         break;
       default:
         break;
@@ -67,19 +105,76 @@ class Register extends React.Component {
   };
 
   updateErrorState = (key, value) => {
-    this.setState(oldState => ({
-      formErrors: { ...oldState.formErrors, [key]: value }
-    }));
+    this.setState(
+      oldState => ({
+        formErrors: {
+          ...oldState.formErrors,
+          [key]: { ...oldState.formErrors[key], ...value }
+        }
+      }),
+      this.isFormValid()
+    );
+  };
+
+  isFormValid = () => {
+    const { formData, formErrors } = this.state;
+    let validate = false;
+    for (let errors in formErrors) {
+      for (let validation in formErrors[errors]) {
+        if (formErrors[errors][validation] !== true) {
+          validate = true;
+        } else {
+          validate = false;
+          break;
+        }
+      }
+    }
+    for (let input in formData) {
+      if (formData[input] !== "") {
+        validate = true;
+      } else {
+        validate = false;
+        break;
+      }
+    }
+    if (validate) {
+      this.setState(oldState => ({ isFormValid: true }));
+    } else {
+      this.setState(oldState => ({ isFormValid: false }));
+    }
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+    const { formData } = this.state;
+    axios
+      .post("http://blog.test/api/auth/register", formData)
+      .then(response => {
+        console.log(response);
+        // localStorage.setItem("user", JSON.stringify(response.data.user));
+        // localStorage.setItem("api_token", response.data.api_token);
+      })
+      .catch(error =>
+        this.setState(() => ({
+          failAlert: {
+            open: true,
+            message: JSON.stringify(error.response.data)
+          }
+        }))
+      );
   };
 
   render() {
-    const { formData, formErrors, isFormValid } = this.state;
+    const { formData, formErrors, isFormValid, failAlert } = this.state;
     return (
       <DefaultLayout>
         <div className="row">
           <div className="col-md-6 offset-md-3">
             <Widget title="Register">
-              <Form>
+              <Alert color="danger" isOpen={failAlert.open}>
+                {failAlert.message}
+              </Alert>
+              <Form onSubmit={this.handleSubmit}>
                 <FormGroup>
                   <Label>Name</Label>
                   <Input
@@ -87,7 +182,7 @@ class Register extends React.Component {
                     name="name"
                     value={formData.name}
                     onChange={this.handleChange}
-                    invalid={formErrors.name}
+                    invalid={formErrors.name.required}
                   />
                   <FormFeedback>Name is required</FormFeedback>
                 </FormGroup>
@@ -98,9 +193,16 @@ class Register extends React.Component {
                     name="email"
                     value={formData.email}
                     onChange={this.handleChange}
-                    invalid={formErrors.email}
+                    invalid={
+                      formErrors.email.required || formErrors.email.valid
+                    }
                   />
-                  <FormFeedback>Email is required</FormFeedback>
+                  {formErrors.email.required && (
+                    <FormFeedback>Email is required</FormFeedback>
+                  )}
+                  {formErrors.email.valid && (
+                    <FormFeedback>Enter a valid email</FormFeedback>
+                  )}
                 </FormGroup>
                 <FormGroup>
                   <Label>Password</Label>
@@ -109,7 +211,7 @@ class Register extends React.Component {
                     name="password"
                     value={formData.password}
                     onChange={this.handleChange}
-                    invalid={formErrors.password}
+                    invalid={formErrors.password.required}
                   />
                   <FormFeedback>Password is required</FormFeedback>
                 </FormGroup>
@@ -120,9 +222,17 @@ class Register extends React.Component {
                     name="confirm_password"
                     value={formData.confirm_password}
                     onChange={this.handleChange}
-                    invalid={formErrors.confirm_password}
+                    invalid={
+                      formErrors.confirm_password.required ||
+                      formErrors.confirm_password.matched
+                    }
                   />
-                  <FormFeedback>Confirm password is required</FormFeedback>
+                  {formErrors.confirm_password.required && (
+                    <FormFeedback>Confirm password is required</FormFeedback>
+                  )}
+                  {formErrors.confirm_password.matched && (
+                    <FormFeedback>Password not matched</FormFeedback>
+                  )}
                 </FormGroup>
                 <FormGroup>
                   <Button color="primary" block disabled={!isFormValid}>

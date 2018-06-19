@@ -7,12 +7,12 @@ import BlogRoutes from "../pages/Blog/BlogRoutes";
 
 const Routes = () => (
   <Switch>
-    <Route path="/blog" component={BlogRoutes} />
-    <Route path="/register" component={Register} />
-    <Route path="/login" component={Login} />
-    <Route path="/about" component={About} />
-    <Route path="/services" component={Services} />
-    <Route path="/contact" component={Contact} />
+    <Route exact path="/blog" component={BlogRoutes} />
+    <Route exact path="/register" component={Register} />
+    <Route exact path="/login" component={Login} />
+    <Route exact path="/about" component={About} />
+    <Route exact path="/services" component={Services} />
+    <Route exact path="/contact" component={Contact} />
     <Route exact path="/" component={Home} />
   </Switch>
 );

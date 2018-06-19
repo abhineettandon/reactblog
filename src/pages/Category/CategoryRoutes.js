@@ -5,7 +5,7 @@ import ListCategoryPosts from "./ListCategoryPosts.jsx";
 
 const CategoryRoutes = ({ match }) => (
   <Switch>
-    <Route path={`${match.url}/:id`} component={ListCategoryPosts} />
+    <Route exact path={`${match.url}/:id`} component={ListCategoryPosts} />
   </Switch>
 );
 

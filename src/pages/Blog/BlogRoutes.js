@@ -8,8 +8,8 @@ import BlogDetails from "./PostDetails";
 
 const BlogRoutes = ({ match }) => (
   <Switch>
-    <Route path={`${match.url}/category`} component={CategoryRoutes} />
-    <Route path={`${match.url}/:id`} component={BlogDetails} />
+    <Route exact path={`${match.url}/category`} component={CategoryRoutes} />
+    <Route exact path={`${match.url}/:id`} component={BlogDetails} />
     <Route exact path={`${match.url}`} component={BlogLlist} />
   </Switch>
 );
