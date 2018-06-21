@@ -154,14 +154,23 @@ class Register extends React.Component {
         // localStorage.setItem("user", JSON.stringify(response.data.user));
         // localStorage.setItem("api_token", response.data.api_token);
       })
-      .catch(error =>
+      .catch(error => {
+        let errors = "";
+        for (let err in error.response.data) {
+          error.response.data[err].map(er => {
+            errors = errors + er;
+            console.log(er);
+          });
+          //console.log(error.response.data[err]);
+        }
+        console.log(errors);
         this.setState(() => ({
           failAlert: {
             open: true,
-            message: JSON.stringify(error.response.data)
+            message: errors
           }
-        }))
-      );
+        }));
+      });
   };
 
   render() {
