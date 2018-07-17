@@ -118,6 +118,7 @@ class Login extends React.Component {
       .then(response => {
         localStorage.setItem("user", JSON.stringify(response.data.user));
         localStorage.setItem("api_token", response.data.api_token);
+        window.location.href = "/";
       })
       .catch(error =>
         this.setState(() => ({ failAlert: { open: true, message: error } }))

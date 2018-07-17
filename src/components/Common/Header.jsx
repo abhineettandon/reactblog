@@ -14,6 +14,8 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 
+import auth from "../../services/auth";
+
 class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -62,19 +64,22 @@ class Header extends React.Component {
                 Blog
               </NavLink>
             </NavItem>
-            <NavItem>
-              <NavLink tag={Link} to="/login">
-                Login
-              </NavLink>
-            </NavItem>
-            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-              <DropdownToggle caret>John Doe</DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem>Profile</DropdownItem>
-                <DropdownItem>Change password</DropdownItem>
-                <DropdownItem danger>Logout</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            {auth.isLoggedIn ? (
+              <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+                <DropdownToggle caret>{auth.user.name}</DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem>Profile</DropdownItem>
+                  <DropdownItem>Change password</DropdownItem>
+                  <DropdownItem>Logout</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            ) : (
+              <NavItem>
+                <NavLink tag={Link} to="/login">
+                  Login
+                </NavLink>
+              </NavItem>
+            )}
           </Nav>
         </div>
       </Navbar>
